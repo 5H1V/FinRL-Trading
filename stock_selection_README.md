@@ -1,65 +1,66 @@
-# 股票选择脚本 (stock_selection.py)
+# Stock Selection Script (stock_selection.py)
 
-## 概述
+## Overview
 
-`stock_selection.py` 是将 `stock_selection.ipynb` Jupyter notebook 转换为命令行脚本的版本。该脚本可以批量运行所有行业的股票选择模型，并生成综合的股票选择结果。
+`stock_selection.py` is a version of the `stock_selection.ipynb` Jupyter notebook converted into a command-line script. This script can batch run stock selection models for all industries and generate comprehensive stock selection results.
 
-## 功能特点
+## Features
 
-- **批量处理**: 自动处理所有11个行业 (sector10, sector15, ..., sector60)
-- **灵活路径**: 支持自定义输入和输出目录
-- **错误处理**: 包含文件存在性检查和异常处理
-- **进度显示**: 详细的处理进度和统计信息
-- **自动建目录**: 如果输出目录不存在会自动创建
+- **Batch Processing**: Automatically processes all 11 industries (sector10, sector15, ..., sector60)
+- **Flexible Paths**: Supports custom input and output directories
+- **Error Handling**: Includes file existence checks and exception handling
+- **Progress Display**: Detailed processing progress and statistics
+- **Automatic Directory Creation**: Automatically creates the output directory if it does not exist.
 
-## 使用方法
+## Usage
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 使用默认输出目录
+# Use the default output directory
 python stock_selection.py --data_path "./data_processor/my_outputs"
 
-# 指定输出目录
+# Specify the output directory
 python stock_selection.py --data_path "./data_processor/my_outputs" --output_path "./result"
 
-# 查看帮助信息
+# View help information
 python stock_selection.py --help
 ```
 
-### 参数说明
+### Parameter Description
 
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
+| Parameter | Type | Required | Default Value | Description |
 |------|------|------|--------|------|
-| `--data_path` | str | 是 | - | 输入sector文件的目录路径 |
-| `--output_path` | str | 否 | `./result` | 输出目录路径 |
+| `--data_path` | str | Yes | - | Directory path for input sector files |
+| `--output_path` | str | No | `./result` | Output directory path |
 
-### 示例用法
+
+### Example Usage
 
 ```bash
-# 示例1: 使用my_outputs目录，输出到result目录
+# Example 1: Use the my_outputs directory to output to the result directory
 python stock_selection.py --data_path "./data_processor/my_outputs" --output_path "./result"
 
-# 示例2: 使用其他数据目录
+# Example 2: Using a different data directory
 python stock_selection.py --data_path "./data_processor/outputs" --output_path "./my_results"
 
-# 示例3: 使用绝对路径
+# Example 3: Using an absolute path
 python stock_selection.py --data_path "D:/data/sectors" --output_path "D:/results"
 ```
 
-## 输入文件要求
+## Input File Requirements
 
-### 必需文件
+### Required Files
 
-1. **final_ratios.csv**: 基本面数据文件
-   - 位置: `{data_path}/final_ratios.csv`
-   - 包含所有股票的基本面比率数据
+1. **final_ratios.csv**: Fundamental data file
+   - Location: `{data_path}/final_ratios.csv`
+   - Contains fundamental ratio data for all stocks
 
-2. **sector*.xlsx**: 行业数据文件
-   - 位置: `{data_path}/sector10.xlsx`, `{data_path}/sector15.xlsx`, ..., `{data_path}/sector60.xlsx`
-   - 每个文件包含对应行业的股票数据
+2. **sector*.xlsx**: Industry data file
+   - Location: `{data_path}/sector10.xlsx`, `{data_path}/sector15.xlsx`, ..., `{data_path}/sector60.xlsx`
+   - Each file contains stock data for the corresponding industry
 
-### 文件结构示例
+### File Structure Example
 
 ```
 data_processor/my_outputs/
@@ -71,25 +72,25 @@ data_processor/my_outputs/
 └── sector60.xlsx
 ```
 
-## 输出文件
+## Output Files
 
-### 主要输出
+### Main Output
 
-- **stock_selected.csv**: 股票选择结果文件
-  - 位置: `{output_path}/stock_selected.csv`
-  - 包含所有行业的股票选择结果
+- **stock_selected.csv**: Stock selection results file
+  - Location: `{output_path}/stock_selected.csv`
+  - Contains stock selection results for all industries
 
-### 输出文件格式
+### Output File Format
 
-| 列名 | 类型 | 说明 |
+| Column Name | Type | Description |
 |------|------|------|
-| `gvkey` | int | 股票唯一标识符 |
-| `predicted_return` | float | 预测收益率 |
-| `trade_date` | str | 交易日期 |
+| `gvkey` | int | Unique Stock Identifier |
+| `predicted_return` | float | Predicted Return Rate |
+| `trade_date` | str | Transaction Date |
 
-### 中间文件
+### Intermediate Files
 
-脚本运行过程中会在 `results/` 目录下生成每个行业的模型结果：
+During script execution, model results for each industry will be generated in the `results/` directory:
 ```
 results/
 ├── sector10/
@@ -101,79 +102,76 @@ results/
     └── df_predict_best.csv
 ```
 
-## 处理流程
+## Processing Flow
 
-1. **参数验证**: 检查输入参数和文件存在性
-2. **目录创建**: 如果输出目录不存在则自动创建
-3. **行业循环**: 对每个行业 (10, 15, 20, ..., 60) 执行：
-   - 检查sector文件是否存在
-   - 运行 `fundamental_run_model.py` 进行模型训练
-   - 读取预测结果文件
-   - 选择前25%的股票 (quantile 0.75)
-   - 收集股票选择结果
-4. **结果汇总**: 将所有行业的结果合并
-5. **保存输出**: 保存到指定的输出目录
+1. **Parameter Validation**: Check input parameters and file existence.
+2. **Directory Creation**: Automatically create the output directory if it does not exist.
+3. **Industry Looping**: For each industry (10, 15, 20, ..., 60), perform the following:
+   - Check if the sector file exists.
+   - Run `fundamental_run_model.py` to train the model.
+   - Read the prediction results file.
+   - Select the top 25% of stocks (quantile 0.75).
+   - Collect the stock selection results.
+4. **Result Summarization**: Merge the results from all industries.
+5. **Save Output**: Save the output to the specified output directory.
 
-## 错误处理
+## Error Handling
 
-脚本包含以下错误处理机制：
+The script includes the following error handling mechanisms:
 
-- **文件不存在**: 如果输入文件不存在，会显示错误信息并退出
-- **模型训练失败**: 如果某个行业的模型训练失败，会跳过该行业继续处理其他行业
-- **结果文件缺失**: 如果预测结果文件不存在，会跳过该行业
-- **数据处理异常**: 如果处理某个行业数据时出现异常，会记录错误并继续处理
+- **File Not Found**: If the input file does not exist, an error message will be displayed and the script will exit.
+- **Model Training Failure**: If model training fails for a particular industry, that industry will be skipped and processing will continue with other industries.
+- **Missing Result File**: If the prediction result file does not exist, that industry will be skipped.
+- **Data Processing Anomaly**: If an anomaly occurs while processing data for a particular industry, the error will be logged and processing will continue.
 
-## 依赖库
+## Dependencies
 
-- `pandas`: 数据处理
-- `argparse`: 命令行参数解析
-- `pathlib`: 路径处理
-- `os`: 操作系统接口
-- `time`: 时间计算
-- `sys`: 系统相关功能
+- `pandas`: Data processing
+- `argparse`: Command-line argument parsing
+- `pathlib`: Path handling
+- `os`: Operating system interface
+- `time`: Time calculation
+- `sys`: System-related functions
 
-## 注意事项
+## Notes
 
-1. **Python版本**: 建议使用Python 3.7或更高版本
-2. **依赖脚本**: 需要确保 `fundamental_run_model.py` 在同一目录下
-3. **内存使用**: 处理大量数据时可能需要较多内存
-4. **运行时间**: 完整运行所有行业可能需要较长时间
-5. **文件权限**: 确保有足够的权限创建输出目录和文件
+1. **Python Version**: Python 3.7 or higher is recommended.
+2. **Dependency Script**: Ensure `fundamental_run_model.py` is in the same directory.
+3. **Memory Usage**: Processing large amounts of data may require significant memory.
+4. **Running Time**: Running all industries completely may take a long time.
+5. **File Permissions**: Ensure sufficient permissions to create output directories and files.
 
-## 与Jupyter Notebook的对比
+## Comparison with Jupyter Notebook
 
-| 特性 | Jupyter Notebook | Python脚本 |
+| Features | Jupyter Notebook | Python Scripts |
 |------|------------------|------------|
-| 交互性 | 高 | 低 |
-| 自动化 | 低 | 高 |
-| 参数化 | 硬编码 | 命令行参数 |
-| 错误处理 | 手动 | 自动 |
-| 批量运行 | 困难 | 简单 |
-| 部署 | 复杂 | 简单 |
+| Interactivity | High | Low |
+| Automation | Low | High |
+| Parameterization | Hard-coded | Command-line Arguments |
+| Error Handling | Manual | Automatic |
+| Batch Execution | Difficult | Easy |
+| Deployment | Complex | Simple |
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Problems
 
-1. **"基本面数据文件不存在"**
-   - 检查 `--data_path` 参数是否正确
-   - 确认 `final_ratios.csv` 文件存在
+1. **"Fundamental data file does not exist"**
+   - Check if the `--data_path` parameter is correct.
+   - Confirm that the `final_ratios.csv` file exists.
+2. **"Sector file does not exist"**
+   - Check if the sector*.xlsx file is in the specified directory.
+   - Confirm that the filename format is correct.
+3. **"Model training failed"**
+   - Check if `fundamental_run_model.py` exists.
+   - Confirm that the input data format is correct.
+4. **"Prediction result file does not exist"**
+   - Check if model training completed successfully.
+   - Confirm that the `results/` directory structure is correct.
 
-2. **"sector文件不存在"**
-   - 检查sector*.xlsx文件是否在指定目录中
-   - 确认文件名格式正确
+### Debugging Suggestions
 
-3. **"模型训练失败"**
-   - 检查 `fundamental_run_model.py` 是否存在
-   - 确认输入数据格式正确
-
-4. **"预测结果文件不存在"**
-   - 检查模型训练是否成功完成
-   - 确认 `results/` 目录结构正确
-
-### 调试建议
-
-- 使用 `--help` 查看参数说明
-- 检查输入文件的存在性和格式
-- 查看详细的错误信息
-- 确认所有依赖库已安装 
+- Use `--help` to view parameter descriptions.
+- Check the existence and format of the input files.
+- View detailed error messages.
+- Confirm that all dependent libraries are installed.
